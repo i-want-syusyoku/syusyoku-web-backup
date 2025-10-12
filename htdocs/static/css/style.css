@@ -1,0 +1,214 @@
+/*
+  style.css — 統合版 (完成)
+  - 元の2つのHTML内スタイルを統合し、再利用性・アクセシビリティ・印刷対応を追加。
+  - 使い方: HTML側で body.layout-a / body.layout-b のどちらかを付与してパディングを切替。
+  - ユーティリティクラス: .card--accent-left, .no-print, .lead
+*/
+
+:root {
+  --bg: #f6f8fa;
+  --card: #ffffff;
+  --accent: #0b6efd;
+  --muted: #6b7280;
+  --maxw: 900px;
+  --radius: 12px;
+  --gap: 18px;
+  --sans: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* -----------------------------
+   ベース / レイアウト
+   ----------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  margin: 0;
+  padding: 28px;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: var(--maxw);
+}
+
+header.main {
+  margin-bottom: 18px;
+}
+header.main h1 {
+  margin: 0 0 6px 0;
+  font-size: 2rem;
+}
+
+/* 汎用 .lead */
+.lead,
+header.main p.lead,
+main p.lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+main p.lead { padding-bottom: 18px; }
+
+/* -----------------------------
+   カードコンポーネント
+   ----------------------------- */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* 左にアクセントボーダーが欲しい場合はユーティリティを付与 */
+.card--accent-left { border-left: 6px solid var(--accent); }
+
+/* 互換性: 既存の article.card を使っている場合は自動でユーティリティを当てる */
+article.card { /* 既存HTMLとの後方互換 */
+  border-left: 6px solid var(--accent);
+}
+
+/* カード内の共通要素 */
+.card h2, .card h3, .card h4 { margin: 0 0 8px 0; }
+.card h4 { font-size: 1.1rem; }
+.card p { margin: 6px 0; color: #111827; }
+.card p.small { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+.card ul, .card ol { margin: 8px 0 6px 18px; }
+.card li { margin: 6px 0; }
+.card dl { margin: 0 0 12px 0; }
+.card dt { font-weight: 700; }
+
+/* section.card の下マージン（旧スタイル互換） */
+section.card { margin-bottom: var(--gap); }
+
+/* -----------------------------
+   Payment Info ページ固有
+   ----------------------------- */
+section#payment-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap);
+}
+@media (min-width: 880px) {
+  section#payment-info { grid-template-columns: repeat(2, 1fr); }
+}
+
+.payment-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* grid-column は親が grid のときのみ意味を持つので、その場合のみ有効 */
+  grid-column: 1 / -1;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.payment-header .nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.nav a {
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--accent);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+.badge {
+  background: rgba(11, 110, 253, 0.08);
+  color: var(--accent);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e6eefb, transparent);
+  margin: 18px 0;
+  border-radius: 2px;
+}
+
+/* -----------------------------
+   フロアリンク / Nav 固有
+   ----------------------------- */
+nav.floor,
+nav[aria-label="フロアリンク"] {
+  margin-top: 24px;
+}
+nav.floor ul { list-style: none; padding-left: 24px; margin: 0; }
+nav.floor li { margin: 8px 0; }
+nav.floor a { color: var(--accent); text-decoration: none; }
+
+/* -----------------------------
+   ヘルパー / ユーティリティ
+   ----------------------------- */
+.sources a { color: var(--accent); text-decoration: none; font-size: 0.92rem; }
+
+/* 画像・メディアのレスポンシブ対応 */
+img, video, iframe, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* リストのデフォルトを整える（必要に応じて上書き） */
+ul, ol { margin: 0 0 12px 18px; padding: 0; }
+
+/* アクセシビリティ: フォーカス表示 */
+a:focus, button:focus, input:focus, select:focus, textarea:focus { outline: none; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(11,110,253,0.14);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* 非表示用ユーティリティ（印刷時にも非表示にしたい場合に便利） */
+.no-print { display: none; }
+@media print { .no-print { display: none !important; } }
+
+/* -----------------------------
+   印刷用 (print)
+   ----------------------------- */
+@media print {
+  body { padding: 6mm; }
+  /* ナビやバッジは印刷非表示 */
+  .nav, .badge { display: none; }
+  /* カードは影を消し、左ボーダーを太くして印刷に最適化 */
+  .card, article.card, section.card { box-shadow: none; border-left: 4px solid #000; }
+}
+
+/* -----------------------------
+   拡張: テーマ切替（任意）
+   - ダークモード等を later に追加したい場合のサンプル
+   ----------------------------- */
+@media (prefers-color-scheme: dark) {
+  /* 必要な場合のみ有効化すること */
+  /* :root { --bg: #0b1220; --card: #071021; --accent: #4ea1ff; --muted: #94a3b8; } */
+}
+
+/* End of file */

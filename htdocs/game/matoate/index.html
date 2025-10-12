@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>的あてゲーム</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ffb86b;--muted:#9aa4b2}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    body{background:linear-gradient(180deg,#061020 0%, var(--bg) 100%);color:#e6eef6;display:flex;align-items:center;justify-content:center}
+    .wrap{width:100%;max-width:980px;padding:20px;box-sizing:border-box}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:10px}
+    h1{font-size:18px;margin:0}
+    .controls{display:flex;gap:8px;align-items:center}
+    button{background:var(--accent);border:none;padding:8px 12px;border-radius:8px;color:#072127;font-weight:600;cursor:pointer}
+    select,input[type=number]{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:8px;color:inherit}
+    .hud{display:flex;gap:12px;align-items:center}
+    .stat{font-size:14px;color:var(--muted)}
+    .main{display:flex;gap:16px}
+    canvas{background:linear-gradient(180deg,#08314a,#04202b);border-radius:8px;flex:1;display:block}
+    .aside{width:220px;padding:8px}
+    .muted{color:var(--muted);font-size:13px}
+    .big{font-size:22px;font-weight:700}
+    footer{margin-top:10px;font-size:12px;color:var(--muted)}
+    @media(max-width:820px){.main{flex-direction:column}.aside{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <h1>的あてゲーム 🎯（JavaScript）</h1>
+        <div class="controls">
+          <div class="hud">
+            <div class="stat">残り時間: <span id="time">--</span>s</div>
+            <div class="stat">スコア: <span id="score">0</span></div>
+            <div class="stat">レベル: <span id="level">1</span></div>
+          </div>
+          <button id="startBtn">スタート</button>
+          <button id="pauseBtn">一時停止</button>
+        </div>
+      </header>
+
+      <div class="main">
+        <canvas id="gameCanvas" width="900" height="560"></canvas>
+
+        <aside class="aside">
+          <div class="muted">設定</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+            <label>ゲーム時間（秒）
+              <input id="totalTime" type="number" min="10" max="300" value="30" />
+            </label>
+            <label>難易度
+              <select id="difficulty">
+                <option value="0">ノーマル</option>
+                <option value="1">ハード（速め）</option>
+                <option value="2">ベリーハード（小さめ・速い）</option>
+              </select>
+            </label>
+            <div class="muted">遊び方: 的をクリックして得点。時間内のスコアを競います。スマホでもタップで遊べます。</div>
+            <div style="margin-top:6px">
+              <div class="big" id="bestScore">ベスト: 0</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer>作成: ChatGPT — カスタマイズしたいときは言ってね！</footer>
+    </div>
+  </div>
+
+  <script>
+    // シンプルな的あてゲーム
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const timeEl = document.getElementById('time');
+    const scoreEl = document.getElementById('score');
+    const levelEl = document.getElementById('level');
+    const totalTimeInput = document.getElementById('totalTime');
+    const difficultySel = document.getElementById('difficulty');
+    const bestScoreEl = document.getElementById('bestScore');
+
+    // レスポンシブ対応: 描画座標を内部解像度で保持し、CSSサイズにスケール
+    const INTERNAL_W = canvas.width;
+    const INTERNAL_H = canvas.height;
+
+    let state = 'idle'; // idle | playing | paused | over
+    let score = 0;
+    let level = 1;
+    let timeLeft = 30;
+    let lastTick = 0;
+    let targets = [];
+    let spawnTimer = 0;
+    let best = Number(localStorage.getItem('hit_best') || 0);
+    bestScoreEl.textContent = 'ベスト: ' + best;
+
+    // サウンド (WebAudio)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq = 880, length = 0.06){
+      try{
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        g.gain.value = 0.08;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start();
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + length);
+        o.stop(audioCtx.currentTime + length + 0.02);
+      }catch(e){/* ブラウザがオーディオを許可しないときは無音 */}
+    }
+
+    // ターゲット生成
+    function spawnTarget(){
+      const diff = Number(difficultySel.value);
+      // 大きさ・速さを難易度で調整
+      const baseR = 28 - diff*8 - Math.min(10, level*2);
+      const r = Math.max(8, Math.round(baseR + (Math.random()-0.5)*8));
+      const x = r + Math.random()*(INTERNAL_W - r*2);
+      const y = r + Math.random()*(INTERNAL_H - r*2);
+      const speed = 30 + Math.random()*80 + diff*40 + level*6;
+      const ang = Math.random()*Math.PI*2;
+      targets.push({x,y, vx: Math.cos(ang)*speed, vy: Math.sin(ang)*speed, r, life: 100});
+      // 場所が重なってたら少しシフト（簡易）
+    }
+
+    function resetGame(){
+      score = 0;
+      level = 1;
+      timeLeft = Number(totalTimeInput.value) || 30;
+      targets = [];
+      spawnTimer = 0;
+      updateHUD();
+    }
+
+    function startGame(){
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      resetGame();
+      state = 'playing';
+      lastTick = performance.now();
+      requestAnimationFrame(loop);
+    }
+
+    function pauseGame(){
+      if(state === 'playing') state = 'paused';
+      else if(state === 'paused') { state = 'playing'; lastTick = performance.now(); requestAnimationFrame(loop);} 
+    }
+
+    function endGame(){
+      state = 'over';
+      playBeep(220,0.15);
+      if(score > best){ best = score; localStorage.setItem('hit_best', best); bestScoreEl.textContent = 'ベスト: ' + best; }
+      alert('ゲーム終了！スコア: ' + score);
+    }
+
+    function updateHUD(){
+      timeEl.textContent = Math.max(0, Math.floor(timeLeft));
+      scoreEl.textContent = score;
+      levelEl.textContent = level;
+    }
+
+    function loop(now){
+      if(state !== 'playing') return;
+      const dt = (now - lastTick)/1000; // 秒
+      lastTick = now;
+
+      // 時間
+      timeLeft -= dt;
+      if(timeLeft <= 0){ timeLeft = 0; updateHUD(); endGame(); return; }
+
+      // レベル上昇: 時間経過で少しずつ
+      const elapsed = (Number(totalTimeInput.value) || 30) - timeLeft;
+      level = 1 + Math.floor(elapsed / 10);
+
+      // ターゲット生成
+      spawnTimer += dt;
+      const spawnInterval = 1.0 - Math.min(0.6, level*0.06) - (Number(difficultySel.value)*0.2);
+      if(spawnTimer > spawnInterval){ spawnTarget(); spawnTimer = 0; }
+
+      // 更新
+      targets.forEach(t=>{
+        t.x += t.vx * dt;
+        t.y += t.vy * dt;
+        // 反射
+        if(t.x - t.r < 0){ t.x = t.r; t.vx *= -1; }
+        if(t.x + t.r > INTERNAL_W){ t.x = INTERNAL_W - t.r; t.vx *= -1; }
+        if(t.y - t.r < 0){ t.y = t.r; t.vy *= -1; }
+        if(t.y + t.r > INTERNAL_H){ t.y = INTERNAL_H - t.r; t.vy *= -1; }
+        t.life -= dt*10;
+      });
+      // 古いターゲットを消す
+      targets = targets.filter(t=>t.life>0);
+
+      draw();
+      updateHUD();
+      requestAnimationFrame(loop);
+    }
+
+    function draw(){
+      // 画面クリア
+      ctx.clearRect(0,0,INTERNAL_W,INTERNAL_H);
+
+      // 背景エフェクト（グリッド）
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      ctx.fillStyle = '#ffffff';
+      for(let gx=0; gx<INTERNAL_W; gx+=60){ ctx.fillRect(gx,0,1,INTERNAL_H); }
+      for(let gy=0; gy<INTERNAL_H; gy+=60){ ctx.fillRect(0,gy,INTERNAL_W,1); }
+      ctx.restore();
+
+      // ターゲットを描画
+      for(const t of targets){
+        // リング
+        const pulse = 0.5 + 0.5*Math.sin((performance.now()/300) + t.r);
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,184,107,${0.14 + 0.06*pulse})`;
+        ctx.fill();
+
+        // 中央の的模様
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, Math.max(3, t.r*0.55), 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, Math.max(2, t.r*0.25), 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fill();
+
+        // 枠
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255,184,107,0.95)';
+        ctx.stroke();
+      }
+
+      // 右上に小さなヒント
+      ctx.fillStyle = 'rgba(255,255,255,0.03)';
+      ctx.fillRect(8,8,180,36);
+      ctx.fillStyle = '#cfe8ff';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('クリック／タップで的を狙おう！', 14, 30);
+    }
+
+    // クリック判定
+    function handleClick(clientX, clientY){
+      // canvas のサイズとスケールを考慮
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = INTERNAL_W / rect.width;
+      const scaleY = INTERNAL_H / rect.height;
+      const x = (clientX - rect.left) * scaleX;
+      const y = (clientY - rect.top) * scaleY;
+
+      // ターゲットに当たったか判定 (近いものを優先)
+      let hitIndex = -1;
+      let hitDist = Infinity;
+      for(let i=0;i<targets.length;i++){
+        const t = targets[i];
+        const dx = x - t.x, dy = y - t.y;
+        const d2 = dx*dx + dy*dy;
+        if(d2 <= t.r*t.r && d2 < hitDist){ hitIndex = i; hitDist = d2; }
+      }
+
+      if(hitIndex >= 0){
+        // ヒット
+        const t = targets.splice(hitIndex,1)[0];
+        // 得点計算 (サイズが小さいほど高得点)
+        const points = Math.round(100 * (1 + level*0.2) * (28 / t.r));
+        score += points;
+        playBeep(1000 + Math.random()*600, 0.06);
+        // エフェクト: 簡易パーティクル
+        spawnHitParticles(t.x, t.y, t.r);
+      }else{
+        // ミス音
+        playBeep(180, 0.05);
+        // ほんの少し時間ペナルティ（任意）
+        timeLeft = Math.max(0, timeLeft - 0.4);
+      }
+      updateHUD();
+    }
+
+    // パーティクル（簡易: 一時的に線を表示）
+    let particles = [];
+    function spawnHitParticles(x,y,r){
+      for(let i=0;i<16;i++){
+        const ang = Math.random()*Math.PI*2;
+        const spd = 60 + Math.random()*220;
+        particles.push({x,y,vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd, life:0.6});
+      }
+      // 描画ループでパーティクルを処理
+      const start = performance.now();
+      // 簡易的にパーティクルを描く（他の描画と一緒に）
+    }
+
+    // 拡張: パーティクルをdrawに追加
+    const origDraw = draw;
+    draw = function(){
+      // 元の描画
+      ctx.clearRect(0,0,INTERNAL_W,INTERNAL_H);
+      // 背景
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      ctx.fillStyle = '#ffffff';
+      for(let gx=0; gx<INTERNAL_W; gx+=60){ ctx.fillRect(gx,0,1,INTERNAL_H); }
+      for(let gy=0; gy<INTERNAL_H; gy+=60){ ctx.fillRect(0,gy,INTERNAL_W,1); }
+      ctx.restore();
+
+      for(const t of targets){
+        const pulse = 0.5 + 0.5*Math.sin((performance.now()/300) + t.r);
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,184,107,${0.14 + 0.06*pulse})`;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, Math.max(3, t.r*0.55), 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, Math.max(2, t.r*0.25), 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255,184,107,0.95)';
+        ctx.stroke();
+      }
+
+      // パーティクル更新と描画
+      const dt = 1/60;
+      for(let i=particles.length-1;i>=0;i--){
+        const p = particles[i];
+        p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+        ctx.globalAlpha = Math.max(0, p.life/0.6);
+        ctx.fillStyle = 'rgba(255,240,200,0.9)';
+        ctx.fillRect(p.x-1.5, p.y-1.5, 3, 3);
+        if(p.life <= 0) particles.splice(i,1);
+      }
+      ctx.globalAlpha = 1;
+
+      // ヒントボックス
+      ctx.fillStyle = 'rgba(255,255,255,0.03)';
+      ctx.fillRect(8,8,180,36);
+      ctx.fillStyle = '#cfe8ff';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('クリック／タップで的を狙おう！', 14, 30);
+    };
+
+    // イベント
+    canvas.addEventListener('click', (e)=>{ if(state==='playing') handleClick(e.clientX, e.clientY); });
+    canvas.addEventListener('touchstart', (e)=>{
+      if(state!=='playing') return;
+      const t = e.touches[0];
+      handleClick(t.clientX, t.clientY);
+    }, {passive:true});
+
+    startBtn.addEventListener('click', ()=>{ if(state==='playing'){ resetGame(); } else startGame(); });
+    pauseBtn.addEventListener('click', ()=>{ pauseGame(); });
+
+    // ページロード時に軽くアニメーションで遊べる
+    (function intro(){
+      // 最初に小さな標的を数個表示
+      for(let i=0;i<3;i++) spawnTarget();
+      draw();
+    })();
+
+    // ウィンドウリサイズでCSSスケーリングに対応（キャンバスの内部解像度は固定）
+    function fitCanvas(){
+      const wrapper = canvas.parentElement;
+      const maxW = wrapper.clientWidth - 240; // aside 分
+      if(window.innerWidth <= 820) {
+        // モバイルでは横幅いっぱい
+        canvas.style.width = '100%';
+      } else {
+        canvas.style.width = Math.min(INTERNAL_W, maxW) + 'px';
+      }
+      // 高さは幅に応じて比率を保つ
+      canvas.style.height = (parseFloat(canvas.style.width) * (INTERNAL_H/INTERNAL_W)) + 'px';
+    }
+    window.addEventListener('resize', fitCanvas);
+    fitCanvas();
+
+    // キーボードのショートカット
+    window.addEventListener('keydown', (e)=>{
+      if(e.code === 'Space'){
+        e.preventDefault();
+        if(state==='playing') pauseGame(); else if(state==='paused') { pauseGame(); }
+      }
+      if(e.key === 'r'){ resetGame(); }
+    });
+
+    // 最後にHUDの初期表示
+    updateHUD();
+
+  </script>
+</body>
+</html>

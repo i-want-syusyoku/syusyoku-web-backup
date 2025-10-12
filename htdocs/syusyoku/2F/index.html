@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>資料館 2F - 一人暮らしフロア（部屋一覧）</title>
+  <meta name="description" content="引越しフロア（2F）の部屋一覧ページ。引越し・家事・貧乏メシ特集 の各部屋へ移動できます。">
+  <style>
+    :root{
+      --bg:#f6f8fa; --card:#fff; --accent:#0b6efd; --muted:#6b7280; --maxw:1100px; --gap:18px; --radius:12px; --sans: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Segoe UI", Roboto, Arial;
+    }
+    body{font-family:var(--sans);background:var(--bg);margin:0;color:#111827;padding:28px;display:flex;justify-content:center}
+    .wrap{width:100%;max-width:var(--maxw)}
+    header.main{margin-bottom:36px}
+    header.main h1{margin:0 0 6px 0;font-size:2rem}
+    header.main p.lead{margin:0;color:var(--muted);font-size:0.95rem}
+      
+    nav.floor{margin-top:32px}
+	nav.floor ul{list-style:none;padding-left:24px;margin:0}
+    nav.floor li{margin:8px 0}
+    nav.floor a{color:var(--accent);text-decoration:none}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:var(--gap);margin-top:18px}
+    @media(min-width:720px){.grid{grid-template-columns:repeat(3,1fr)}}
+
+    .card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 18px rgba(15,23,42,0.06);text-decoration:none;color:inherit;display:flex;flex-direction:column}
+    .card img{width:100%;height:180px;object-fit:cover;display:block}
+    .card .body{padding:14px}
+    .card h3{margin:0 0 6px;font-size:1rem}
+    .card p{margin:0;color:var(--muted);font-size:0.95rem}
+
+    .card:focus, .card:hover{outline:none;box-shadow:0 12px 30px rgba(11,110,253,0.12);transform:translateY(-4px);transition:all .18s ease}
+    .card:active{transform:translateY(-1px)}
+
+    .cta{display:inline-block;margin-top:12px;padding:6px 10px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-size:0.6rem}
+
+    .note{margin-top:16px;color:var(--muted);font-size:0.9rem}
+      
+      .floor{margin-top:32px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="main">
+      <h1>就職を目指す男のサイト 資料館 2F</h1>
+    </header>
+    <h2>部屋一覧</h2>
+    <section class="grid" aria-label="2F 部屋一覧">
+      <!-- Card 1: 引越し -->
+      <a class="card" href="/syusyoku/2F/hikkosi">
+        <img src="/static/images/hikkosi.png" alt="段ボールと引越し作業の写真（引越し）">
+        <div class="body">
+          <h3>引越し</h3>
+          <p>住まい探し、引越し準備、ライフラインの手続きなど、引越しで必要な情報をまとめた部屋。</p>
+          <span class="cta" aria-hidden>移動する</span>
+        </div>
+      </a>
+
+      <!-- Card 2: 家事 -->
+      <a class="card" href="/syusyoku/2F/kaji">
+        <img src="/static/images/kaji.png" alt="掃除や洗濯をするイメージ写真（家事）">
+        <div class="body">
+          <h3>家事</h3>
+          <p>掃除・洗濯・収納など、一人暮らしをスムーズにする家事のコツやチェックリスト。</p>
+          <span class="cta" aria-hidden>移動する</span>
+        </div>
+      </a>
+
+      <!-- Card 3: 貧乏メシ -->
+      <a class="card" href="/syusyoku/2F/binbou-meshi">
+        <img src="/static/images/mesi.png" alt="節約料理の写真（貧乏メシ）">
+        <div class="body">
+          <h3>貧乏メシ特集</h3>
+          <p>節約レシピ・安くて満足できる食事アイデアを集めた部屋。料理初心者向けの簡単メニューがメイン。</p>
+          <span class="cta" aria-hidden>移動する</span>
+        </div>
+      </a>
+
+    </section>
+            <nav class="floor" aria-label="フロアリンク">
+  <ul>
+    <li>
+      <a href="/syusyoku/1F">1F 税金に関する資料室</a>
+    </li>
+    <li>2F 一人暮らしに関する資料室
+      <ul>
+        <li><a href="/syusyoku/2F/hikkosi">引越し</a></li>
+        <li><a href="/syusyoku/2F/kaji">家事</a></li>
+        <li><a href="/syusyoku/2F/mesi">貧乏メシ特集</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="/syusyoku/3F">3F 就職活動に関する資料室</a>
+    </li>
+    <li>
+      <a href="/">ホームへ戻る</a>
+    </li>
+  </ul>
+</nav>
+  </div>
+</body>
+</html>
