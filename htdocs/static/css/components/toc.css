@@ -16,3 +16,7 @@ nav ul {
   margin: 0;
   padding-left: var(--spacing-l);
 }
+
+nav li + li {
+    margin-top: 0;
+}

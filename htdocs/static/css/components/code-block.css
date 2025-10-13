@@ -1,6 +1,6 @@
 pre[class*="language-"] {
   padding: var(--spacing-m);
-  margin: 0 0 var(--spacing-l);
+  margin: var(--spacing-s) 0 var(--spacing-l) !important;
   border-radius: var(--border-radius);
   overflow-x: auto;
 }

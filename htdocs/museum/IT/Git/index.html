@@ -275,14 +275,22 @@ git commit --amend</code></pre>
           <h2 id="chapter6">第6章: GitHubとの連携</h2>
           <p>ローカルリポジトリをGitHubなどのリモートサーバーに保存・公開することで、バックアップやチームでの共同作業が可能になる。</p>
 
-          <h3>6-1. リモートリポジトリの接続とPush/Pull</h3>
+          <h3>6-1. リモートリポジトリの接続とPush（アップロード）</h3>
           <ol>
             <li>
               <strong>GitHubでリポジトリを作成</strong>: GitHubサイトで新規リポジトリを作成。
+              <p>（例）リポジトリ名：yourrepo</p>
             </li>
             <li>
               <strong>リモートリポジトリを登録</strong>: ローカルリポジトリに、接続先となるGitHubリポジトリのURLを登録する。
-              <pre><code class="language-bash">git remote add origin https://github.com/yourname/yourrepo.git</code></pre>
+              <pre><code class="language-bash">git remote add origin https://github.com/yourname/yourrepo.git
+
+#リモートリポジトリが正しく登録されたか確認
+git remote -v
+
+# 実行結果例
+# origin  https://github.com/yourname/yourrepo.git (fetch)
+# origin  https://github.com/yourname/yourrepo.git (push)</code></pre>
             </li>
             <li>
               <strong>ローカルの変更をPush</strong>: ローカルのコミット履歴をGitHubにアップロード（Push）する。
@@ -290,12 +298,8 @@ git commit --amend</code></pre>
 git branch -M main
 
 # mainブランチの内容を、origin（GitHub）にPushする
-# -u オプションは、今後のpush/pullのデフォルト先として設定
+# -u オプションは、今後のpushのデフォルト先として設定
 git push -u origin main</code></pre>
-            </li>
-            <li>
-              <strong>リモートの変更をPull</strong>: GitHub上の最新の状態をローカルにダウンロード（Pull）する。
-              <pre><code class="language-bash">git pull origin main</code></pre>
             </li>
           </ol>
 
@@ -372,7 +376,7 @@ git push -u origin main</code></pre>
             </li>
             <li>
               <strong>OSの資格情報マネージャからGitHubの認証情報を削除 (Windowsの場合)</strong>
-              <ol>
+              <ol style="margin-top: 0.5em;">
                 <li>スタートメニュー → 「資格情報マネージャー」 (Credential Manager) を検索して開く。</li>
                 <li>「Windows 資格情報」を選択。</li>
                 <li>一覧から <code>git:https://github.com</code> や <code>github.com</code> に関連するエントリを探して削除する。</li>
