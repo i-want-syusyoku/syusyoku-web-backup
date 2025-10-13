@@ -5,10 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Git入門：一人でもチームでも使えるバージョン管理の基本</title>
-    <link rel="icon" href="/static/favicon.ico">
-    <meta name="description"
-      content="初心者向けのGit入門ガイド。初期設定、基本操作（add/commit）、ブランチ、マージ、取り消し、GitHub連携、便利な設定などをわかりやすく解説します。" />
+    <meta name="description" content="初心者向けのGit入門ガイド。初期設定、基本操作（add/commit）、ブランチ、マージ、取り消し、GitHub連携、便利な設定などをわかりやすく解説します。" />
     <meta name="keywords" content="Git,バージョン管理,git入門,GitHub,ブランチ,マージ" />
+    <link rel="icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components/toc.css">
+    <link rel="stylesheet" href="/static/css/components/code-block.css">
+    <link rel="stylesheet" href="/static/css/components/blockquote.css">
+    <link rel="stylesheet" href="/static/css/components/table.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
   </head>
 
   <body>
@@ -45,7 +51,7 @@
 
           <h3>1-1. ユーザー情報の設定</h3>
           <p>コミット履歴に「誰が変更したか」を記録するため、名前とメールアドレスを設定する。</p>
-          <pre><code># グローバル設定（このPC上のすべてのGitリポジトリで使われる）
+          <pre><code class="language-bash"># グローバル設定（このPC上のすべてのGitリポジトリで使われる）
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"</code></pre>
 
@@ -57,7 +63,7 @@ git config --global user.email "your.email@example.com"</code></pre>
 
           <h3>1-2. リポジトリの作成</h3>
           <p>バージョン管理を始めたいフォルダに移動し、次のコマンドを実行する。</p>
-          <pre><code># "my-project" フォルダに移動
+          <pre><code class="language-bash"># "my-project" フォルダに移動
 cd my-project
 
 # このフォルダをGitリポジトリとして初期化する
@@ -71,7 +77,7 @@ git init</code></pre>
             <li><strong>ステージング (<code>git add</code>)</strong>: 変更したファイルの中から、履歴に記録したいものを選ぶ。</li>
             <li><strong>コミット (<code>git commit</code>)</strong>: 選んだファイルの変更内容を、メッセージ付きで履歴に記録する。</li>
           </ol>
-          <pre><code># 現在のディレクトリ以下のすべての変更をステージングエリアに追加
+          <pre><code class="language-bash"># 現在のディレクトリ以下のすべての変更をステージングエリアに追加
 git add .
 
 # ステージングされた内容を "最初のコミット" というメッセージ付きで履歴に記録
@@ -94,23 +100,23 @@ git commit -m "最初のコミット"</code></pre>
           <p>コミットを繰り返すことで、プロジェクトの歴史が作られていく。</p>
 
           <h3>2-1. コミット履歴の確認</h3>
-          <pre><code># これまでのコミット履歴を一覧で表示
+          <pre><code class="language-bash"># これまでのコミット履歴を一覧で表示
 git log
 
 # 履歴を1行で、ブランチの関係もグラフィカルに、すべてのブランチを表示（推奨）
 git log --oneline --graph --all</code></pre>
 
           <h3>2-2. 変更内容（差分）の確認</h3>
-          <pre><code># 前回のコミットから、現在のワーキングディレクトリの変更内容を確認
+          <pre><code class="language-bash"># 前回のコミットから、現在のワーキングディレクトリの変更内容を確認
 git diff</code></pre>
 
           <h3>2-3. 過去のバージョンを参照</h3>
           <p>特定の過去の状態に戻り、ファイルを確認することができる。</p>
-          <pre><code># &lt;commit_id&gt; には git log で表示されるコミットID（例: a1b2c3d）を指定
+          <pre><code class="language-bash"># &lt;commit_id&gt; には git log で表示されるコミットID（例: a1b2c3d）を指定
 git checkout &lt;commit_id&gt;</code></pre>
           <blockquote>
             <p><strong>注意</strong>: この状態でファイルを編集してコミットすると歴史が分岐し複雑になる。ファイル確認後は、元の最新の状態に戻るのが一般的。</p>
-            <pre><code># 最新の状態に戻る
+            <pre><code class="language-bash"># 最新の状態に戻る
 git checkout main</code></pre>
           </blockquote>
         </section>
@@ -146,7 +152,7 @@ git checkout main</code></pre>
           </ol>
 
           <h3>3-3. ブランチの基本操作</h3>
-          <pre><code># ブランチの一覧を表示
+          <pre><code class="language-bash"># ブランチの一覧を表示
 git branch
 
 # "feature/new-login" という名前のブランチを作成
@@ -171,7 +177,7 @@ git branch -d feature/new-login</code></pre>
           <p>分岐したブランチでの作業完了後、その成果を <code>main</code> ブランチに取り込む。この操作が「マージ」である。</p>
 
           <h3>4-1. マージの基本</h3>
-          <pre><code># 1. mainブランチに移動する
+          <pre><code class="language-bash"># 1. mainブランチに移動する
 git switch main
 
 # 2. "feature/new-login" ブランチの変更を取り込む
@@ -232,7 +238,7 @@ git merge feature/new-login</code></pre>
             <li>修正後、ファイルを保存し、<code>git add</code> と <code>git commit</code> を行いマージを完了させる。</li>
           </ol>
           <p>マージを中止して元の状態に戻すことも可能。</p>
-          <pre><code># マージを中止して、マージ開始前の状態に戻る
+          <pre><code class="language-bash"># マージを中止して、マージ開始前の状態に戻る
 git merge --abort</code></pre>
         </section>
         <hr>
@@ -241,7 +247,7 @@ git merge --abort</code></pre>
           <p>作業を元に戻したい場合の方法。</p>
 
           <h3>5-1. ファイルの変更を取り消す (<code>git restore</code>)</h3>
-          <pre><code># ワーキングディレクトリでの変更を取り消す（前回のコミットの状態に戻す）
+          <pre><code class="language-bash"># ワーキングディレクトリでの変更を取り消す（前回のコミットの状態に戻す）
 git restore &lt;file_name&gt;
 
 # ステージングした変更を取り消す（ワーキングディレクトリの変更は残る）
@@ -250,7 +256,7 @@ git restore --staged &lt;file_name&gt;</code></pre>
           <h3>5-2. コミットをやり直す</h3>
           <h4>直前のコミットを修正する (<code>--amend</code>)</h4>
           <p>コミットメッセージの間違いや、ファイルの入れ忘れ時に使用する。</p>
-          <pre><code># ファイルを追加し忘れた場合
+          <pre><code class="language-bash"># ファイルを追加し忘れた場合
 git add forgotten_file.txt
 
 # 直前のコミットを修正（新しいコミットは作られず、直前のコミットが上書きされる）
@@ -276,11 +282,11 @@ git commit --amend</code></pre>
             </li>
             <li>
               <strong>リモートリポジトリを登録</strong>: ローカルリポジトリに、接続先となるGitHubリポジトリのURLを登録する。
-              <pre><code>git remote add origin https://github.com/yourname/yourrepo.git</code></pre>
+              <pre><code class="language-bash">git remote add origin https://github.com/yourname/yourrepo.git</code></pre>
             </li>
             <li>
               <strong>ローカルの変更をPush</strong>: ローカルのコミット履歴をGitHubにアップロード（Push）する。
-              <pre><code># デフォルトのブランチ名を "main" に設定（初回のみ）
+              <pre><code class="language-bash"># デフォルトのブランチ名を "main" に設定（初回のみ）
 git branch -M main
 
 # mainブランチの内容を、origin（GitHub）にPushする
@@ -289,7 +295,7 @@ git push -u origin main</code></pre>
             </li>
             <li>
               <strong>リモートの変更をPull</strong>: GitHub上の最新の状態をローカルにダウンロード（Pull）する。
-              <pre><code>git pull origin main</code></pre>
+              <pre><code class="language-bash">git pull origin main</code></pre>
             </li>
           </ol>
 
@@ -352,7 +358,7 @@ git push -u origin main</code></pre>
 
           <h3>6-5. Push時の認証エラーと対処法</h3>
           <h4>エラーメッセージ:</h4>
-          <pre><code>remote: Invalid username or token. Password authentication is not supported for Git operations.</code></pre>
+          <pre><code class="language-none">remote: Invalid username or token. Password authentication is not supported for Git operations.</code></pre>
 
           <h4>原因:</h4>
           <p>現在サポートされていない古いパスワード認証の情報が、PC内に保存されている場合にこのエラーが出る。</p>
@@ -362,7 +368,7 @@ git push -u origin main</code></pre>
           <ol>
             <li>
               <strong>Git設定から認証ヘルパーを削除 (効果がない場合もある)</strong>
-              <pre><code>git config --global --unset credential.helper</code></pre>
+              <pre><code class="language-bash">git config --global --unset credential.helper</code></pre>
             </li>
             <li>
               <strong>OSの資格情報マネージャからGitHubの認証情報を削除 (Windowsの場合)</strong>
@@ -386,7 +392,7 @@ git push -u origin main</code></pre>
           <p>パスワードなどの機密情報や、OSが自動生成するファイル、ビルド時に生成されるファイルなどをリポジトリに含めないようにするため。</p>
 
           <h4>記述例 (<code>.gitignore</code>)</h4>
-          <pre><code># 一時ファイル
+          <pre><code class="language-none"># 一時ファイル
 *.log
 
 # OSのファイル
@@ -419,7 +425,8 @@ Thumbs.db
     <footer>
       <p><small>&copy; 2025 就職を目指す男のサイト</small></p>
     </footer>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
   </body>
 
 </html>

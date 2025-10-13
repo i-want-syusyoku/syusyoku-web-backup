@@ -1,0 +1,18 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--spacing-l) 0;
+  font-size: 0.95em;
+}
+
+th,
+td {
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-s) var(--spacing-m);
+  text-align: left;
+}
+
+thead {
+  background-color: var(--color-background-subtle);
+  font-weight: bold;
+}

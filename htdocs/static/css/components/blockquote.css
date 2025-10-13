@@ -1,0 +1,11 @@
+blockquote {
+  margin: 0 0 var(--spacing-m);
+  padding: var(--spacing-m) var(--spacing-l);
+  background-color: var(--color-background-subtle);
+  border-left: 5px solid var(--color-primary);
+  color: var(--color-text-light);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}

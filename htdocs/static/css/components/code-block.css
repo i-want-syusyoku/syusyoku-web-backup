@@ -1,0 +1,15 @@
+pre[class*="language-"] {
+  padding: var(--spacing-m);
+  margin: 0 0 var(--spacing-l);
+  border-radius: var(--border-radius);
+  overflow-x: auto;
+}
+
+:not(pre) > code {
+  background-color: var(--color-background-subtle);
+  color: #c7254e;
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-code);
+  font-size: 0.9em;
+}
