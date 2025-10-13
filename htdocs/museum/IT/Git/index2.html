@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git入門：一人でもチームでも使えるバージョン管理の基本</title>
+    <link rel="icon" href="/static/favicon.ico">
+    <meta name="description"
+      content="初心者向けのGit入門ガイド。初期設定、基本操作（add/commit）、ブランチ、マージ、取り消し、GitHub連携、便利な設定などをわかりやすく解説します。" />
+    <meta name="keywords" content="Git,バージョン管理,git入門,GitHub,ブランチ,マージ" />
+  </head>
+
+  <body>
+    <header>
+      <a href="/">
+        <img src="/static/logo.png" alt="就職を目指す男のサイト" width="418" height="100">
+      </a>
+    </header>
+    <main>
+      <article>
+        <h1>Git入門：一人でもチームでも使えるバージョン管理の基本</h1>
+
+        <p>
+          Gitは、プログラムのソースコードなどの変更履歴を記録・追跡するためのバージョン管理システムである。一人での開発効率を上げるだけでなく、チームでの共同作業に不可欠なツールだ。この記事では、Gitの基本的な使い方から、GitHubと連携した実践的な開発フローまでを解説する。
+        </p>
+        <nav>
+          <h2>目次</h2>
+          <ul>
+            <li><a href="#chapter1">第1章: Gitの初期設定と基本の3ステップ</a></li>
+            <li><a href="#chapter2">第2章: 履歴の確認と過去の参照</a></li>
+            <li><a href="#chapter3">第3章: ブランチを使った効率的な開発</a></li>
+            <li><a href="#chapter4">第4章: ブランチの統合（マージ）</a></li>
+            <li><a href="#chapter5">第5章: 作業の取り消しと修正</a></li>
+            <li><a href="#chapter6">第6章: GitHubとの連携</a></li>
+            <li><a href="#chapter7">第7章: やっておくと便利な設定</a></li>
+          </ul>
+        </nav>
+
+        <hr>
+        <section>
+          <h2 id="chapter1">第1章: Gitの初期設定と基本の3ステップ</h2>
+
+          <p>最初にPCでGitを使うための準備を行う。この設定は一度だけ実施すればよい。</p>
+
+          <h3>1-1. ユーザー情報の設定</h3>
+          <p>コミット履歴に「誰が変更したか」を記録するため、名前とメールアドレスを設定する。</p>
+          <pre><code># グローバル設定（このPC上のすべてのGitリポジトリで使われる）
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"</code></pre>
+
+          <blockquote>
+            <p><strong>【補足】グローバル設定とローカル設定</strong></p>
+            <p><code>--global</code> はPC全体の設定。特定のプロジェクト（フォルダ）だけ違う名前を使いたい場合、そのフォルダで <code>--global</code>
+              なしでコマンドを実行する。ローカル設定が優先される。</p>
+          </blockquote>
+
+          <h3>1-2. リポジトリの作成</h3>
+          <p>バージョン管理を始めたいフォルダに移動し、次のコマンドを実行する。</p>
+          <pre><code># "my-project" フォルダに移動
+cd my-project
+
+# このフォルダをGitリポジトリとして初期化する
+git init</code></pre>
+          <p>これを実行すると、フォルダ内に <code>.git</code> という隠しフォルダが作成される。ここに変更履歴などの全情報が保存される。</p>
+
+          <h3>1-3. 基本の3ステップ：「作業 → add → commit」</h3>
+          <p>Gitでの作業は、基本的に以下の3ステップの繰り返しになる。</p>
+          <ol>
+            <li><strong>作業</strong>: ファイルを作成・編集する。</li>
+            <li><strong>ステージング (<code>git add</code>)</strong>: 変更したファイルの中から、履歴に記録したいものを選ぶ。</li>
+            <li><strong>コミット (<code>git commit</code>)</strong>: 選んだファイルの変更内容を、メッセージ付きで履歴に記録する。</li>
+          </ol>
+          <pre><code># 現在のディレクトリ以下のすべての変更をステージングエリアに追加
+git add .
+
+# ステージングされた内容を "最初のコミット" というメッセージ付きで履歴に記録
+git commit -m "最初のコミット"</code></pre>
+
+          <blockquote>
+            <p><strong>【用語解説】</strong></p>
+            <ul>
+              <li><strong>ワーキングディレクトリ</strong>: 現在作業しているファイルが存在するフォルダ。</li>
+              <li><strong>ステージングエリア（インデックス）</strong>: コミット対象の変更を一時的に置く場所。「次のコミットに含める変更リスト」のようなもの。</li>
+              <li><strong>リポジトリ</strong>: <code>.git</code> フォルダのこと。ファイルの全変更履歴が保存されている場所。</li>
+            </ul>
+          </blockquote>
+
+          <hr>
+        </section>
+
+        <section>
+          <h2 id="chapter2">第2章: 履歴の確認と過去の参照</h2>
+          <p>コミットを繰り返すことで、プロジェクトの歴史が作られていく。</p>
+
+          <h3>2-1. コミット履歴の確認</h3>
+          <pre><code># これまでのコミット履歴を一覧で表示
+git log
+
+# 履歴を1行で、ブランチの関係もグラフィカルに、すべてのブランチを表示（推奨）
+git log --oneline --graph --all</code></pre>
+
+          <h3>2-2. 変更内容（差分）の確認</h3>
+          <pre><code># 前回のコミットから、現在のワーキングディレクトリの変更内容を確認
+git diff</code></pre>
+
+          <h3>2-3. 過去のバージョンを参照</h3>
+          <p>特定の過去の状態に戻り、ファイルを確認することができる。</p>
+          <pre><code># &lt;commit_id&gt; には git log で表示されるコミットID（例: a1b2c3d）を指定
+git checkout &lt;commit_id&gt;</code></pre>
+          <blockquote>
+            <p><strong>注意</strong>: この状態でファイルを編集してコミットすると歴史が分岐し複雑になる。ファイル確認後は、元の最新の状態に戻るのが一般的。</p>
+            <pre><code># 最新の状態に戻る
+git checkout main</code></pre>
+          </blockquote>
+        </section>
+        <hr>
+        <section>
+          <h2 id="chapter3">第3章: ブランチを使った効率的な開発</h2>
+          <p>ブランチはGitの強力な機能。安全かつ並行して作業を進めるために活用する。</p>
+
+          <h3>3-1. ブランチとは？</h3>
+          <p>
+            履歴の流れを分岐させ、元の本流（<code>main</code>ブランチ）に影響を与えずに作業を進めるための機能。「料理のレシピ（<code>main</code>）のコピーを作り、新しい味付け（<code>feature</code>ブランチ）を試作する」ようなもの。試作が成功すれば、元のレシピに反映（マージ）する。
+          </p>
+
+          <h3>3-2. 個人開発でもブランチは役立つか？</h3>
+          <p>YES。非常に役立つ。</p>
+          <ol>
+            <li>
+              <strong>安全な作業場所の確保（試行錯誤がしやすい）</strong>
+              <p>
+                <code>main</code>ブランチを常に「正常に動作する安定版」とし、新機能追加やバグ修正は別ブランチで行う。作業が混乱しても、そのブランチを捨てて<code>main</code>からやり直せるため、安心して試行錯誤できる。
+              </p>
+            </li>
+            <li>
+              <strong>複数のタスクを並行して進められる</strong>
+              <p>「機能Aを実装中に、バグBを見つけた」という状況でも、ブランチがあれば対応は容易。</p>
+              <ol>
+                <li><code>feature/A</code> ブランチの作業を一旦コミット。</li>
+                <li><code>main</code> ブランチに戻り、<code>fix/B</code> ブランチを作成してバグを修正し、<code>main</code> にマージ。</li>
+                <li>再び <code>feature/A</code> ブランチに戻り作業を再開。</li>
+              </ol>
+              <p>このように、思考をクリアに保ったままタスクを切り替えられる。</p>
+            </li>
+          </ol>
+
+          <h3>3-3. ブランチの基本操作</h3>
+          <pre><code># ブランチの一覧を表示
+git branch
+
+# "feature/new-login" という名前のブランチを作成
+git branch feature/new-login
+
+# 作成したブランチに切り替え（移動）
+git checkout feature/new-login
+
+# ブランチの作成と切り替えを同時に行う
+git checkout -b feature/new-login
+
+# 最近のGitでは、より直感的な switch コマンドが推奨されている
+git switch feature/new-login      # ブランチの切り替え
+git switch -c feature/new-login   # ブランチの作成と切り替え
+
+# 不要になったブランチを削除（マージ済みのもののみ）
+git branch -d feature/new-login</code></pre>
+        </section>
+        <hr>
+        <section>
+          <h2 id="chapter4">第4章: ブランチの統合（マージ）</h2>
+          <p>分岐したブランチでの作業完了後、その成果を <code>main</code> ブランチに取り込む。この操作が「マージ」である。</p>
+
+          <h3>4-1. マージの基本</h3>
+          <pre><code># 1. mainブランチに移動する
+git switch main
+
+# 2. "feature/new-login" ブランチの変更を取り込む
+git merge feature/new-login</code></pre>
+
+          <h3>4-2. マージの種類</h3>
+          <p>マージには、状況に応じて2つの種類がある。</p>
+          <ul>
+            <li><strong>Fast-forward マージ（早送りマージ）</strong>
+              <p><code>main</code>ブランチに変更がなく、作業ブランチだけが進んでいる場合、<code>main</code>のポインタが作業ブランチの先端に移動するだけ。履歴は一本線のままになる。</p>
+            </li>
+            <li><strong>非Fast-forward マージ（マージコミットを作成）</strong>
+              <p>
+                <code>main</code>と作業ブランチの両方で変更が進んでいる場合、2つの分岐した履歴を統合するための新しい「マージコミット」が自動的に作成される。これにより、「ここで機能が取り込まれた」という履歴が明確に残る。
+              </p>
+            </li>
+          </ul>
+
+          <table border="1">
+            <thead>
+              <tr>
+                <th>コマンド</th>
+                <th>Fast-forward可能な場合</th>
+                <th>Fast-forward不可能な場合</th>
+                <th>主な用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>git merge &lt;branch&gt;</code> (デフォルト)</td>
+                <td>Fast-forwardマージを行う</td>
+                <td>マージコミットを作成する</td>
+                <td>個人開発、シンプルな運用</td>
+              </tr>
+              <tr>
+                <td><code>git merge --no-ff &lt;branch&gt;</code></td>
+                <td><strong>マージコミットを強制的に作成する</strong></td>
+                <td>マージコミットを作成する</td>
+                <td>機能開発の履歴を残したいチーム開発</td>
+              </tr>
+              <tr>
+                <td><code>git merge --ff-only &lt;branch&gt;</code></td>
+                <td>Fast-forwardマージを行う</td>
+                <td><strong>エラーを出して停止する</strong></td>
+                <td>リモートの変更を取り込むなど、安全性を重視する場合</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>4-3. コンフリクト（衝突）の解決</h3>
+          <p>異なるブランチで同じファイルの同じ行を編集すると、Gitはどちらを優先すべきか判断できず、「コンフリクト（衝突）」が発生する。</p>
+          <ol>
+            <li>コンフリクトが起きたファイルをエディタで開く。</li>
+            <li><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>,
+              <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>
+              のマーカーで示された箇所を、手動で正しい内容に修正する。
+            </li>
+            <li>修正後、ファイルを保存し、<code>git add</code> と <code>git commit</code> を行いマージを完了させる。</li>
+          </ol>
+          <p>マージを中止して元の状態に戻すことも可能。</p>
+          <pre><code># マージを中止して、マージ開始前の状態に戻る
+git merge --abort</code></pre>
+        </section>
+        <hr>
+        <section>
+          <h2 id="chapter5">第5章: 作業の取り消しと修正</h2>
+          <p>作業を元に戻したい場合の方法。</p>
+
+          <h3>5-1. ファイルの変更を取り消す (<code>git restore</code>)</h3>
+          <pre><code># ワーキングディレクトリでの変更を取り消す（前回のコミットの状態に戻す）
+git restore &lt;file_name&gt;
+
+# ステージングした変更を取り消す（ワーキングディレクトリの変更は残る）
+git restore --staged &lt;file_name&gt;</code></pre>
+
+          <h3>5-2. コミットをやり直す</h3>
+          <h4>直前のコミットを修正する (<code>--amend</code>)</h4>
+          <p>コミットメッセージの間違いや、ファイルの入れ忘れ時に使用する。</p>
+          <pre><code># ファイルを追加し忘れた場合
+git add forgotten_file.txt
+
+# 直前のコミットを修正（新しいコミットは作られず、直前のコミットが上書きされる）
+git commit --amend</code></pre>
+
+          <h4>過去のコミットを取り消す (<code>reset</code> vs <code>revert</code>)</h4>
+          <ul>
+            <li><code>git reset &lt;commit_id&gt;</code>:
+              指定したコミットまで歴史を巻き戻す。<strong>push済みのコミットをresetすると、他者の履歴と矛盾が生じるため危険。</strong> 個人作業でのみ使用する。</li>
+            <li><code>git revert &lt;commit_id&gt;</code>: 指定したコミットの<strong>変更内容を打ち消す、新しいコミットを作成する。</strong>
+              歴史を書き換えないため、チームで共有しているリポジトリでも安全に使える。</li>
+          </ul>
+        </section>
+        <hr>
+        <section>
+          <h2 id="chapter6">第6章: GitHubとの連携</h2>
+          <p>ローカルリポジトリをGitHubなどのリモートサーバーに保存・公開することで、バックアップやチームでの共同作業が可能になる。</p>
+
+          <h3>6-1. リモートリポジトリの接続とPush/Pull</h3>
+          <ol>
+            <li>
+              <strong>GitHubでリポジトリを作成</strong>: GitHubサイトで新規リポジトリを作成。
+            </li>
+            <li>
+              <strong>リモートリポジトリを登録</strong>: ローカルリポジトリに、接続先となるGitHubリポジトリのURLを登録する。
+              <pre><code>git remote add origin https://github.com/yourname/yourrepo.git</code></pre>
+            </li>
+            <li>
+              <strong>ローカルの変更をPush</strong>: ローカルのコミット履歴をGitHubにアップロード（Push）する。
+              <pre><code># デフォルトのブランチ名を "main" に設定（初回のみ）
+git branch -M main
+
+# mainブランチの内容を、origin（GitHub）にPushする
+# -u オプションは、今後のpush/pullのデフォルト先として設定
+git push -u origin main</code></pre>
+            </li>
+            <li>
+              <strong>リモートの変更をPull</strong>: GitHub上の最新の状態をローカルにダウンロード（Pull）する。
+              <pre><code>git pull origin main</code></pre>
+            </li>
+          </ol>
+
+          <blockquote>
+            <p><strong>VSCodeの活用</strong></p>
+            <p>VSCodeの「ソース管理」パネルを使えば、<code>add</code>, <code>commit</code>, <code>push</code>, <code>pull</code>
+              などの操作をボタンクリックで行える。「Publish to GitHub」ボタンは、リポジトリ作成から最初のPushまでを自動化する。</p>
+          </blockquote>
+
+          <h3>6-2. GitHubへの認証</h3>
+          <p>git push を実行すると、GitHubから認証を求められる。これは、権限のない第三者がリポジトリを勝手に書き換えるのを防ぐためである。認証方法は主に2つある。</p>
+          <table border="1">
+            <thead>
+              <tr>
+                <th>認証方法</th>
+                <th>主な用途</th>
+                <th>特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>SSHキー</strong> (推奨)</td>
+                <td>個人の開発マシンでの日常作業</td>
+                <td>一度設定すればパスワード入力不要。安全性が高い。</td>
+              </tr>
+              <tr>
+                <td><strong>Personal Access Token (PAT)</strong></td>
+                <td>自動化スクリプト (CI/CD)、API利用</td>
+                <td>有効期限や権限を細かく設定可能。セキュリティリスクを限定できる。</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>日常的な開発では、設定の手間は最初だけなので<strong>SSHキー</strong>が最もストレスが少ない。</p>
+
+          <h3>6-3. 認証方法①: Personal Access Token (PAT)</h3>
+          <p><code>git push</code> 時に表示される認証ダイアログでは、パスワードの代わりにPATを使用する。</p>
+          <ul>
+            <li><strong>ユーザ名</strong>: GitHubのユーザ名</li>
+            <li><strong>パスワード</strong>: 作成したPATを貼り付け</li>
+          </ul>
+          <h4>PATの作成手順:</h4>
+          <ol>
+            <li>GitHub右上のプロフィール画像 → <code>Settings</code></li>
+            <li>左メニュー最下部の <code>Developer settings</code></li>
+            <li><code>Personal access tokens</code> → <code>Fine-grained tokens</code> を選択</li>
+            <li><code>Generate new token</code> をクリック</li>
+            <li><code>Token name</code>（例: my-mac-token）、<code>Expiration</code>（有効期限）を設定</li>
+            <li><code>Repository access</code> でリポジトリを選択</li>
+            <li><code>Permissions</code> → <code>Repository permissions</code> → <code>Contents</code>
+              を探し、<code>Access: Read and write</code> に変更</li>
+            <li><code>Generate token</code> をクリックして生成。<strong>このトークンは一度しか表示されないので、必ずコピーして安全な場所に保管する。</strong></li>
+          </ol>
+
+          <h3>6-4. 認証方法②: SSHキー (推奨)</h3>
+          <p>SSHキーを設定すると、<code>git push</code> 時に毎回パスワードやPATを入力する必要がなくなる。設定方法は公開鍵と秘密鍵のペアを作成し、公開鍵をGitHubに登録する。</p>
+          <p>詳細な手順は以下の記事などを参照すること。<br>
+            (参考: <a
+              href="https://zenn.dev/tko_kasai/articles/326d8104278c0b">https://zenn.dev/tko_kasai/articles/326d8104278c0b</a>
+            )</p>
+
+          <h3>6-5. Push時の認証エラーと対処法</h3>
+          <h4>エラーメッセージ:</h4>
+          <pre><code>remote: Invalid username or token. Password authentication is not supported for Git operations.</code></pre>
+
+          <h4>原因:</h4>
+          <p>現在サポートされていない古いパスワード認証の情報が、PC内に保存されている場合にこのエラーが出る。</p>
+
+          <h4>対処法:</h4>
+          <p>古い認証情報をクリアする必要がある。</p>
+          <ol>
+            <li>
+              <strong>Git設定から認証ヘルパーを削除 (効果がない場合もある)</strong>
+              <pre><code>git config --global --unset credential.helper</code></pre>
+            </li>
+            <li>
+              <strong>OSの資格情報マネージャからGitHubの認証情報を削除 (Windowsの場合)</strong>
+              <ol>
+                <li>スタートメニュー → 「資格情報マネージャー」 (Credential Manager) を検索して開く。</li>
+                <li>「Windows 資格情報」を選択。</li>
+                <li>一覧から <code>git:https://github.com</code> や <code>github.com</code> に関連するエントリを探して削除する。</li>
+                <li>再度 <code>git push</code> を実行すると、新しい認証ダイアログが表示されるはず。</li>
+              </ol>
+            </li>
+          </ol>
+          <p>(macOSの場合は「キーチェーンアクセス」アプリで同様の操作を行う)</p>
+        </section>
+        <hr>
+        <section>
+          <h2 id="chapter7">第7章: やっておくと便利な設定</h2>
+          <h3><code>.gitignore</code> ファイル</h3>
+          <p>Gitの管理対象から外すファイルを指定する設定ファイル。プロジェクトのルートディレクトリに <code>.gitignore</code> という名前で作成する。</p>
+
+          <h4>なぜ必要か？</h4>
+          <p>パスワードなどの機密情報や、OSが自動生成するファイル、ビルド時に生成されるファイルなどをリポジトリに含めないようにするため。</p>
+
+          <h4>記述例 (<code>.gitignore</code>)</h4>
+          <pre><code># 一時ファイル
+*.log
+
+# OSのファイル
+.DS_Store
+Thumbs.db
+
+# ビルド結果
+/dist/
+*.class
+
+# 環境設定ファイル（機密情報）
+.env</code></pre>
+        </section>
+        <hr>
+        <section>
+          <h2>不足している知識と、次へのステップ</h2>
+          <p>ここまでの内容で、Gitの基本は網羅できている。さらにGitを使いこなすために、以下のトピックについて調べると良い。</p>
+          <ol>
+            <li><strong><code>git rebase</code></strong>: <code>merge</code>
+              と並ぶもう一つの統合方法。コミット履歴を一直線に綺麗に保つことができるが、概念が少し複雑。マージとの違いから理解を始めるのがよい。</li>
+            <li><strong><code>git stash</code></strong>: コミットしたくない作業内容を一時的に退避させる機能。ブランチを切り替える前に、中途半端な作業を隠したい時に便利。</li>
+            <li><strong>Pull Request (プルリクエスト)</strong>:
+              チーム開発の要。自分の変更を<code>main</code>ブランチにマージしてもらう前に、「この変更をレビューしてください」と依頼する機能。GitHub上で行う操作であり、コードの品質維持に重要。</li>
+            <li><strong>Git-flowなどのブランチ戦略</strong>:
+              チーム開発を円滑に進めるための、ブランチの命名規則や運用ルールのモデル。「どのような時に、どのような名前のブランチを切り、どうやってマージしていくか」という一連の流れを定義したもの。</li>
+          </ol>
+        </section>
+      </article>
+    </main>
+    <footer>
+      <p><small>&copy; 2025 就職を目指す男のサイト</small></p>
+    </footer>
+
+  </body>
+
+</html>
