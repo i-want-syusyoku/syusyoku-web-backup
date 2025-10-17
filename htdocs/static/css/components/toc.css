@@ -20,3 +20,14 @@ nav ul {
 nav li + li {
     margin-top: 0;
 }
+
+nav.floor,
+nav[aria-label="フロアリンク"] {
+  margin-top: 24px;
+  max-width: var(--container-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+nav.floor ul { list-style: none; padding-left: 24px; margin: 0; }
+nav.floor li { margin: 4px 0; }
+nav.floor a { color: var(--color-primary); text-decoration: none; }
