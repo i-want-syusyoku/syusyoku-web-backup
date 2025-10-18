@@ -1,4 +1,4 @@
-name: FTP for XXXXXX to infinityfree
+name: FTP for main to infinityfree
 
 on:
   push:
