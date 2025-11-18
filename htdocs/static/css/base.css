@@ -59,3 +59,10 @@ hr {
   margin: var(--spacing-xl) 0;
 }
 
+.article-meta {
+  color: #555;
+  font-size: 0.9em;
+}
+.article-meta .separator {
+  margin: 0 0.5em;
+}
