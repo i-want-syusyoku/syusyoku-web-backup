@@ -1,126 +1,220 @@
 <!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>就職を目指す男のサイト</title>
-  <link rel="icon" href="/static/favicon.ico">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Zen+Antique+Soft&display=swap');
-    body{
-      margin:0; padding:40px 20px;
-      background: #001748 url('https://www.transparenttextures.com/patterns/cubes.png');
-      font-family: 'MS PGothic', 'Verdana', 'Zen Antique Soft', sans-serif;
-      color:#222;
-    }
 
-    .container{
-      max-width:1100px;
-      margin:0 auto;
-      text-align:center;
-    }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>就職を目指す男のサイト</title>
+    <link rel="icon" href="/static/favicon.ico">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Zen+Antique+Soft&display=swap');
 
-    h1.site-title{
-      font-size:64px;
-      margin:8px 0 6px;
-      color:#002fff;
-      -webkit-text-stroke:2px rgba(255,255,255,0.95);
-      text-shadow: 2px 2px 0 #fff, 4px 6px 8px rgba(0,0,0,0.45);
-      line-height:1;
-      letter-spacing:2px;
-    }
-    /* サブタイトル */
-    .subtitle{color:#8fc7d1; font-weight:700; margin-bottom:6px}
+      body {
+        margin: 0;
+        padding: 40px 20px;
+        background: #001748 url('https://www.transparenttextures.com/patterns/cubes.png');
+        font-family: 'MS PGothic', 'Verdana', 'Zen Antique Soft', sans-serif;
+        color: #222;
+      }
 
-    /* marquee風帯 */
-    .marq{background:linear-gradient(90deg,#39ffa9,#ffffff); padding:6px 0; border:3px solid #fff; box-shadow:0 0 0 3px rgba(180,80,130,0.08) inset}
-    .marq marquee{font-weight:700}
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        text-align: center;
+      }
 
-    .counter{display:inline-block;background:#1b3456;color:#fff;padding:6px 12px;border-radius:4px;border:3px solid #000;margin:12px 0;font-family:monospace;font-size:20px;letter-spacing:4px}
+      h1.site-title {
+        font-size: 64px;
+        margin: 8px 0 6px;
+        color: #002fff;
+        -webkit-text-stroke: 2px rgba(255, 255, 255, 0.95);
+        text-shadow: 2px 2px 0 #fff, 4px 6px 8px rgba(0, 0, 0, 0.45);
+        line-height: 1;
+        letter-spacing: 2px;
+      }
 
-    /* 点滅テキスト */
-    .blink{color:#e60000;font-weight:700; animation:blink 1s steps(2,end) infinite}
-    @keyframes blink{50%{visibility:hidden}}
+      /* サブタイトル */
+      .subtitle {
+        color: #8fc7d1;
+        font-weight: 700;
+        margin-bottom: 6px;
+        padding-top: 10px;
+      }
 
-    /* コンテンツ枠（白のボックス、薄い枠線） */
-    .box{background:rgba(89, 124, 176, 0.95); padding:14px; margin-top:18px; border:4px solid #d0c5dd}
+      /* marquee風帯 */
+      .marq {
+        background: linear-gradient(90deg, #39ffa9, #ffffff);
+        padding: 6px 0;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 3px rgba(180, 80, 130, 0.08) inset
+      }
 
-    /* リンクテーブル（左紫・右白の二列） */
-    table.link-table{width:100%; border-collapse:collapse; margin-top:18px}
-    table.link-table td{vertical-align:middle}
-    table.link-table .left{
-      width:260px;
-      background:linear-gradient(#b0e1ff,#8ccbff);
-      border:3px solid #6a3b8a;
-      color:#ffffff; text-align:left; padding:10px 12px; font-weight:700; font-size:16px
-    }
-    table.link-table .left a{color:#008f13; text-decoration:none}
-    table.link-table .right{
-      border:3px solid #6a3b8a; text-align:left; padding:10px 12px; background:#d7ffea; color:#5b2b5b
-    }
-    table.link-table tr+tr td{border-top:4px solid #fff}
+      .marq marquee {
+        font-weight: 700
+      }
 
-    /* 左の★アイコン */
-    .star{color:#ff0044; margin-right:6px}
+      .counter {
+        display: inline-block;
+        background: #1b3456;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        border: 3px solid #000;
+        margin: 12px 0;
+        font-family: monospace;
+        font-size: 20px;
+        letter-spacing: 4px
+      }
 
-    /* サイドに小物（カウンタやUnderConstruction） */
-    .side-stuff{margin-top:12px; text-align:center}
-    .counter-small{display:inline-block;background:#fff;padding:6px 8px;border:2px solid #999;margin-top:8px}
+      /* 点滅テキスト */
+      .blink {
+        color: #e60000;
+        font-weight: 700;
+        animation: blink 1s steps(2, end) infinite
+      }
 
-    /* フッター */
-    footer{margin-top:18px;font-size:13px;color:#ecf2ff}
+      @keyframes blink {
+        50% {
+          visibility: hidden
+        }
+      }
 
-    /* レスポンシブで狭い画面は縦並び */
-    @media(max-width:880px){
-      table.link-table{display:block}
-      table.link-table .left, table.link-table .right{display:block;width:100%}
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1 class="site-title">就職を目指す男のサイト</h1>
-    <div class="subtitle">ようこそ。我が家へ</div>
+      /* コンテンツ枠（白のボックス、薄い枠線） */
+      .box {
+        background: rgba(89, 124, 176, 0.95);
+        padding: 14px;
+        margin-top: 18px;
+        border: 4px solid #d0c5dd
+      }
+
+      /* リンクテーブル（左紫・右白の二列） */
+      table.link-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 18px
+      }
+
+      table.link-table td {
+        vertical-align: middle
+      }
+
+      table.link-table .left {
+        width: 260px;
+        background: linear-gradient(#b0e1ff, #8ccbff);
+        border: 3px solid #6a3b8a;
+        color: #ffffff;
+        text-align: left;
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 16px
+      }
+
+      table.link-table .left a {
+        color: #008f13;
+        text-decoration: none
+      }
+
+      table.link-table .right {
+        border: 3px solid #6a3b8a;
+        text-align: left;
+        padding: 10px 12px;
+        background: #d7ffea;
+        color: #5b2b5b
+      }
+
+      table.link-table tr+tr td {
+        border-top: 4px solid #fff
+      }
+
+      /* 左の★アイコン */
+      .star {
+        color: #ff0044;
+        margin-right: 6px
+      }
+
+      /* サイドに小物（カウンタやUnderConstruction） */
+      .side-stuff {
+        margin-top: 12px;
+        text-align: center
+      }
+
+      .counter-small {
+        display: inline-block;
+        background: #fff;
+        padding: 6px 8px;
+        border: 2px solid #999;
+        margin-top: 8px
+      }
+
+      /* フッター */
+      footer {
+        margin-top: 18px;
+        font-size: 13px;
+        color: #ecf2ff
+      }
+
+      /* レスポンシブで狭い画面は縦並び */
+      @media(max-width:880px) {
+        table.link-table {
+          display: block
+        }
+
+        table.link-table .left,
+        table.link-table .right {
+          display: block;
+          width: 100%
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="/">
+        <img src="/static/logo.png" alt="就職を目指す男のサイト" width="600" height="143">
+      </a>
+      <!-- <div class="subtitle">ようこそ。我が家へ</div> -->
 
 
-    <div class="box">
+      <div class="box">
 
-      <table class="link-table">
-        <tr>
-          <td class="left"><span class="star">★</span><a href="/game">ゲームコーナーはこちら</a></td>
-          <td class="right">きまぐれにWEBゲームを設置していきます。</td>
-        </tr>
-        <tr>
-          <td class="left"><span class="star">★</span><a href="/diary">日記はこちら</a></td>
-          <td class="right">きまぐれに日記を書いていきます。</td>
-        </tr>
-        <tr>
-          <td class="left"><span class="star">★</span><a href="/syusyoku">就職資料館はこちら</a></td>
-          <td class="right">就職するにあたって必要な知識を蓄積していきます。</td>
-        </tr>
-        <tr>
-          <td class="left"><span class="star">★</span><a href="/museum">資料館 別館はこちら</a></td>
-          <td class="right">仕事に役立つ知識を蓄積していきます。</td>
-        </tr>
-        <tr>
-          <td class="left"><span class="star">★</span><a href="https://www3.rocketbbs.com/601/syusyoku.html">BBSはこちら</a></td>
-          <td class="right">レンタル掲示板です。気軽にどうぞ</td>
-        </tr>
-        <tr>
-          <td class="left"><span class="star">★</span><a href="https://wnk.kesug.com/">ワイらの開発部</a></td>
-          <td class="right">スペシャルサンクス！世話になったお方のホームページ</td>
-        </tr>
-      </table>
+        <table class="link-table">
+          <tr>
+            <td class="left"><span class="star">★</span><a href="/game">ゲームコーナーはこちら</a></td>
+            <td class="right">きまぐれにWEBゲームを設置していきます。</td>
+          </tr>
+          <tr>
+            <td class="left"><span class="star">★</span><a href="/diary">日記はこちら</a></td>
+            <td class="right">きまぐれに日記を書いていきます。</td>
+          </tr>
+          <tr>
+            <td class="left"><span class="star">★</span><a href="/syusyoku">就職資料館はこちら</a></td>
+            <td class="right">就職するにあたって必要な知識を蓄積していきます。</td>
+          </tr>
+          <tr>
+            <td class="left"><span class="star">★</span><a href="/museum">資料館 別館はこちら</a></td>
+            <td class="right">仕事に役立つ知識を蓄積していきます。</td>
+          </tr>
+          <tr>
+            <td class="left"><span class="star">★</span><a href="https://www3.rocketbbs.com/601/syusyoku.html">BBSはこちら</a></td>
+            <td class="right">レンタル掲示板です。気軽にどうぞ</td>
+          </tr>
+          <tr>
+            <td class="left"><span class="star">★</span><a href="https://wnk.kesug.com/">ワイらの開発部</a></td>
+            <td class="right">スペシャルサンクス！世話になったお方のホームページ</td>
+          </tr>
+        </table>
 
-      <div class="side-stuff">
+        <div class="side-stuff">
+
+        </div>
 
       </div>
 
+      <footer>
+        <p>Produced by 就職を目指す男　&nbsp;|&nbsp; © 2025</p>
+      </footer>
     </div>
+  </body>
 
-    <footer>
-      <p>Produced by 就職を目指す男　&nbsp;|&nbsp; © 2025</p>
-    </footer>
-  </div>
-</body>
 </html>
