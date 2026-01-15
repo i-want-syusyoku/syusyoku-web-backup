@@ -16,3 +16,15 @@ thead {
   background-color: var(--color-background-subtle);
   font-weight: bold;
 }
+
+.table-scroll-wrapper {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.role-matrix th, .role-matrix td {
+  white-space: nowrap;
+  font-size: 0.9rem;
+  text-align: center;
+  vertical-align: middle;
+}
